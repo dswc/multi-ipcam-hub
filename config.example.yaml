@@ -1,0 +1,41 @@
+# multi-ipcam-hub：RTSP IPCam 設定範本
+# 使用方式：複製一份為 config.yaml 再填入密碼（config.yaml 已列入 .gitignore，不會被提交）
+# 常見 RTSP 路徑（依廠牌不同，請查閱說明書）：
+#   Hikvision: rtsp://user:pass@IP:554/Streaming/Channels/101   (102 為子碼流)
+#   Dahua    : rtsp://user:pass@IP:554/cam/realmonitor?channel=1&subtype=0
+#   TP-Link  : rtsp://user:pass@IP:554/stream1                  (stream2 為子碼流)
+# 程式會以 host/port/username/password/path 組成 RTSP URL，密碼中的特殊字元會自動編碼
+# 也可改用 url: "rtsp://..." 直接指定完整位址（會忽略上述欄位，特殊字元需自行 URL 編碼）
+
+cameras:
+  - name: cam1
+    host: 192.168.0.2
+    port: 554
+    username: admin
+    password: ""         # TODO: 填入密碼
+    path: /stream1       # 依廠牌修改，見上方說明
+  - name: cam2
+    host: 192.168.0.3
+    port: 554
+    username: admin
+    password: ""         # TODO: 填入密碼
+    path: /stream1
+
+display:
+  columns: 2           # 畫面分割：橫向幾格（省略時 = 攝影機數量）
+  rows: 1              # 畫面分割：直向幾格（省略時自動算出足夠的列數）
+                       # 攝影機依 cameras 順序由左到右、由上到下填入；多出的格子顯示黑色
+  cell_width: 854      # 每一格的寬度（像素）
+  cell_height: 480     # 每一格的高度（像素）
+  keep_aspect: true    # true：維持影像原始長寬比，不足處補黑邊；false：拉伸填滿整格
+  show_fps: true
+
+recording:
+  output_dir: "recordings"
+  fps: 15              # 錄影檔寫入的 FPS
+
+snapshot_dir: "snapshots"
+
+reconnect:
+  initial_delay: 1.0   # 斷線後首次重連等待秒數
+  max_delay: 30.0      # 重連等待上限（指數退避）

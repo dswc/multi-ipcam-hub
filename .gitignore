@@ -1,0 +1,25 @@
+# 虛擬環境
+.venv/
+venv/
+env/
+
+# Python 產生的檔案
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# 含攝影機密碼的本機設定（請改提交 config.example.yaml）
+config.yaml
+
+# 程式輸出
+recordings/
+snapshots/
+
+# 編輯器與作業系統
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
