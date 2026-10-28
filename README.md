@@ -52,10 +52,33 @@ python main.py -c my_config.yaml
 | `s` | 每隻攝影機各存一張截圖到 `snapshots/` |
 | `r` | 開始／停止錄影（每隻各一個 mp4，存到 `recordings/`） |
 
+## 掃描區域網路中的攝影機
+
+`scanner.py` 可找出網路中的 IP 攝影機（只用標準函式庫，不需額外安裝）：
+
+```powershell
+python scanner.py                                  # 掃描本機所在的 /24 網段
+python scanner.py -s 192.168.1.0/24                # 自訂網段
+python scanner.py -s 192.168.1.10-50 -s 10.0.0.5   # 範圍或單一 IP，可重複指定
+python scanner.py -e cameras_found.yaml            # 輸出成 config.yaml 的 cameras 區塊
+```
+
+| 參數 | 說明 |
+|------|------|
+| `-s` / `--subnet` | 網段，支援 CIDR（`192.168.1.0/24`）、範圍（`192.168.1.10-50`、`192.168.1.10-192.168.1.50`）、單一 IP |
+| `-p` / `--ports` | 要測試的埠（預設 `554,8554,80,8080,8000,37777,34567`） |
+| `-t` / `--timeout` | 每次連線逾時秒數（預設 0.5） |
+| `-w` / `--workers` | 同時連線數（預設 256） |
+| `--onvif-wait` | 等待 ONVIF 回應秒數，`0` 表示不做 ONVIF 探測（預設 3） |
+| `-e` / `--export` | 把結果輸出成可貼進 `config.yaml` 的設定 |
+
+判斷方式：RTSP 埠對 `OPTIONS` 請求有正確回應、回應 ONVIF WS-Discovery 群播，或開放 Hikvision（8000）／Dahua（37777）／XiongMai（34567）的私有埠。廠牌由 RTSP／HTTP 回應內容與 ONVIF 資訊推測，匯出時會依廠牌填入預設 RTSP 路徑。ONVIF 群播只能找到本機所在網段的設備。
+
 ## 架構
 
 - `camera.py`：`RTSPCamera` 類別，每隻攝影機一個背景執行緒持續讀取，只保留最新影格（避免延遲累積），斷線時以指數退避自動重連。
 - `main.py`：讀取設定、組合畫面、處理截圖與錄影。
+- `scanner.py`：掃描區域網路中的 IP 攝影機，可匯出設定。
 
 ## 常見問題
 
